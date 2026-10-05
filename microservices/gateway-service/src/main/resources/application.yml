@@ -1,0 +1,29 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        # http://localhost:8888/identity/api/auth/login  ->  http://localhost:8080/api/auth/login
+        - id: identity-service
+          uri: http://localhost:8080
+          predicates:
+            - Path=/identity/**
+          filters:
+            - StripPrefix=1   # bỏ 1 đoạn path đầu tiên: /identity
+
+        # http://localhost:8888/product/api/products  ->  http://localhost:8082/api/products
+        - id: product-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/product/**
+          filters:
+            - StripPrefix=1   # bỏ /product
+
+# Bật log để thấy Gateway khớp route nào và chuyển tiếp đi đâu
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
